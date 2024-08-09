@@ -2,13 +2,18 @@
 import { CiEdit } from "react-icons/ci";
 import { MdOutlineDelete } from "react-icons/md";
 import { useNewStore } from "../store/store2";
-const Buttions = ({ id }) => {
-  const { deleteData } = useNewStore();
+const Buttions = ({ id, onDelete }) => {
+  const { deleteData, updateId } = useNewStore();
+
+  const handleDelete = () => {
+    onDelete(id);
+  };
+
   return (
     <div className="flex justify-center gap-10">
       <button
         className="text-blue-500 hover:text-blue-700"
-        onClick={() => console.log("clik")}
+        onClick={() => updateId(id)}
       >
         <CiEdit className="w-6 h-6" />
       </button>

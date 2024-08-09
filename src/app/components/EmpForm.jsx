@@ -1,7 +1,7 @@
 "use client";
 import useNewStore from "../store/store2";
 
-const EmpForm = () => {
+const EmpForm = ({ insertData, updateEmpData, data }) => {
   const {
     name,
     setName,
@@ -10,16 +10,19 @@ const EmpForm = () => {
     designation,
     setDesignation,
     isUpdated,
-    createData,
-    updateData,
   } = useNewStore();
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    //const formData = new FormData(e.target);
-    //const data = Object.fromEntries(formData.entries());
-    isUpdated ? updateData() : createData();
-    console.log("imm");
+    if (isUpdated) {
+      updateEmpData(id, name, salary, designation);
+    } else {
+      insertData(name, salary, designation);
+    }
+    // Clear the form after submission
+    setName("");
+    setSalary("");
+    setDesignation("");
   };
 
   return (

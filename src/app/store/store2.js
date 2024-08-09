@@ -1,67 +1,73 @@
-import { useState } from "react";
+import { useReducer } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { storageKey } from "../constant/constant";
 
 const useNewStore = () => {
-  const [name, setName] = useState("");
-  const [salary, setSalary] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [data, setData] = useState([]);
-  const [isUpdated, setIsUpdated] = useState(false);
-  console.log("aman", data);
-
-  function createData() {
-    const id = uuidv4();
-    const emp = {
-      name,
-      salary,
-      designation,
-      id,
-    };
-
-    //setData((prev) => [emp]);
-
-    setData((prev) => {
-      const newData = [...prev, emp];
-      console.log("Updated Data:", newData); // This will log the updated state correctly
-      return newData;
-    });
-
-    setSalary("");
-    setName("");
-
-    setDesignation("");
-    console.log({ ...data });
-  }
-  function updateData(id) {
-    setData((prev) =>
-      prev.map((obj) =>
-        obj.id === id ? { name, salary, designation, id } : obj
-      )
-    );
-
-    setSalary("");
-    setName("");
-
-    setDesignation("");
-  }
-  function deleteData(id) {
-    setData((prev) => prev.filter((obj) => obj.id !== id));
-  }
-  return {
-    name,
-    setName,
-    salary,
-    setSalary,
-    designation,
-    setDesignation,
-    data,
-    setData,
-    isUpdated,
-    setIsUpdated,
-    createData,
-    updateData,
-    deleteData,
+  const initialState = {
+    name: "",
+    salary: "",
+    designation: "",
+    data: JSON.parse(localStorage.getItem(storageKey)) || [],
+    isUpdated: false,
+    id: "",
   };
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "INSERT_DATA":
+        const newData = [
+          ...state.data,
+          {
+            id: uuidv4(),
+            name: action.name,
+            salary: action.salary,
+            designation: action.designation,
+          },
+        ];
+        localStorage.setItem("data", JSON.stringify(newData));
+        return {
+          ...state,
+          data: newData,
+          isUpdated: true,
+        };
+      case "UPDATE_DATA":
+        const updatedData = state.data.map((item) => {
+          if (item.id === action.id) {
+            return {
+              ...item,
+              name: action.name,
+              salary: action.salary,
+              designation: action.designation,
+            };
+          }
+          return item;
+        });
+        localStorage.setItem("data", JSON.stringify(updatedData));
+        return {
+          ...state,
+          data: updatedData,
+        };
+      case "DELETE_DATA":
+        const filteredData = state.data.filter((item) => item.id !== action.id);
+        localStorage.setItem("data", JSON.stringify(filteredData));
+        return {
+          ...state,
+          data: filteredData,
+        };
+      case "RESET_FORM":
+        return initialState;
+      default:
+        return state;
+    }
+  };
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("data")) || [];
+    dispatch({ type: "LOAD_DATA", data });
+  }, []);
+
+  return { state, dispatch };
 };
+
+const [state, dispatch] = useReducer(reducer, initialState);
 
 export default useNewStore;

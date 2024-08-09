@@ -1,7 +1,7 @@
 import Buttions from "./Buttons";
 import useNewStore from "../store/store2";
 
-const EmpTable = () => {
+const EmpTable = ({ data, onDelete }) => {
   const { data } = useNewStore();
   return (
     <div className="w-4/5  mx-32 mt-36 flex justify-center items-center ">
@@ -24,7 +24,7 @@ const EmpTable = () => {
           </tr>
         </thead>
         <tbody>
-          {data?.map((item) => (
+          {data?.map((item, index) => (
             <tr key={item.id}>
               <td className="py-2 px-2 border-b border-r-2 border-gray-200">
                 {index}
@@ -39,7 +39,13 @@ const EmpTable = () => {
                 {item.salary}
               </td>
               <td className="py-2 px-16 border-b border-gray-200">
-                {<Buttions id={item.id} />}
+                {
+                  <Buttions
+                    id={item.id}
+                    onUpdate={onUpdate}
+                    onDelete={onDelete}
+                  />
+                }
               </td>
             </tr>
           ))}
